@@ -1,0 +1,120 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.jumbotron {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,.05);
+}
+
+.card {
+    box-shadow: 0 4px 6px rgba(0,0,0,.05);
+    border: none;
+    border-radius: 1rem;
+}
+
+/* Светлый фон для иконок */
+.bg-soft-primary {
+    background-color: rgba(13, 110, 253, 0.1);
+}
+
+/* Эффект приподнятости карточки */
+.shadow-lg {
+    box-shadow: 0 1rem 3rem rgba(0,0,0,.1) !important;
+}
+
+/* Градиент для левой части (опционально вместо bg-primary) */
+.bg-primary-gradient {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+}
+
+/* Анимация для карточек */
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.1);
+}
+
+/* Кнопки */
+.btn-primary {
+    background: linear-gradient(135deg, #0d6efd, #0a58ca);
+    border: none;
+    transition: transform 0.1s ease;
+}
+.btn-primary:hover {
+    transform: scale(1.02);
+    background: linear-gradient(135deg, #0b5ed7, #094a9e);
+}
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+/* Формы */
+.form-control, .form-select {
+    border-radius: 0.75rem;
+    border: 1px solid #e0e0e0;
+    transition: all 0.2s ease;
+}
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.15);
+}
+
+/* Список вакансий */
+.list-group-item {
+    transition: background-color 0.2s ease;
+    border-left: 3px solid transparent;
+}
+.list-group-item:hover {
+    background-color: #f8f9fa;
+    border-left-color: #0d6efd;
+}
+
+/* Блок предсказания */
+.salary-card {
+    background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    border-radius: 1rem;
+    padding: 1.5rem;
+}
+.salary-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #0d6efd;
+}
+
+/* Анимация загрузки */
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+.loading-spinner {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Для графика на главной */
+.hero-section {
+    background: linear-gradient(135deg, #0d6efd, #0a58ca);
+    color: white;
+    padding: 3rem;
+    border-radius: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Медиазапросы для мобилок */
+@media (max-width: 768px) {
+    .salary-number {
+        font-size: 1.8rem;
+    }
+    .card-header h5 {
+        font-size: 1rem;
+    }
+}

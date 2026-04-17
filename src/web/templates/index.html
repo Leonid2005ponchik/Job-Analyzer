@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        min-height: 100vh;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    
+    .glass-card {
+        background: rgba(25, 25, 35, 0.92);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        transition: all 0.2s ease;
+    }
+    
+    .glass-card:hover {
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+    
+    .card-header {
+        background: rgba(20, 20, 30, 0.8);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px 20px 0 0 !important;
+        padding: 1rem 1.25rem;
+    }
+    
+    .card-body {
+        background: transparent;
+        padding: 1.25rem;
+    }
+    
+    .text-muted-light {
+        color: #8b8ba5 !important;
+    }
+    
+    .border-bottom-light {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .badge-light-custom {
+        background: rgba(50, 50, 70, 0.6);
+        color: #b8b8d0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 4px 10px;
+        font-weight: 400;
+        font-size: 0.75rem;
+        border-radius: 20px;
+    }
+    
+    .btn-outline-light-custom {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #b8b8d0;
+        background: transparent;
+        border-radius: 30px;
+        padding: 0.25rem 1rem;
+        font-size: 0.8rem;
+        transition: all 0.2s;
+    }
+    
+    .btn-outline-light-custom:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .form-control-dark {
+        background: rgba(20, 20, 30, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        border-radius: 12px;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .form-control-dark:focus {
+        background: rgba(20, 20, 30, 0.9);
+        border-color: #6c5ce7;
+        color: #ffffff;
+        box-shadow: 0 0 0 0.2rem rgba(108, 92, 231, 0.2);
+        outline: none;
+    }
+    
+    .form-label-custom {
+        color: #b8b8d0;
+        font-size: 0.8rem;
+        font-weight: 500;
+        margin-bottom: 0.3rem;
+    }
+    
+    .stat-box {
+        background: rgba(20, 20, 30, 0.5);
+        border-radius: 16px;
+        padding: 0.75rem;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .link-light {
+        color: #c8c8e0;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    
+    .link-light:hover {
+        color: #ffffff;
+    }
+    
+    h2, h5, h6 {
+        color: #ffffff;
+    }
+    
+    p, li, small {
+        color: #a8a8c0;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="row g-4">
+        <!-- Левая колонка: Новости + Вакансии -->
+        <div class="col-lg-4">
+            <!-- Блок новостей -->
+            <div class="glass-card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Последние новости</h5>
+                </div>
+                <div class="card-body">
+                    {% if news %}
+                        {% for item in news %}
+                            <div class="border-bottom-light pb-3 mb-3">
+                                <h6 class="mb-1 fs-6">
+                                    <a href="{{ item.link }}" target="_blank" class="link-light">
+                                        {{ item.title }}
+                                    </a>
+                                </h6>
+                                <small class="text-muted-light">{{ item.published[:10] }}</small>
+                                <p class="mt-2 small text-muted-light mb-0">{{ item.summary|truncate(100) }}</p>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted-light text-center mb-0">Новости временно недоступны</p>
+                    {% endif %}
+                </div>
+            </div>
+
+
+            <div class="glass-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Свежие вакансии</h5>
+                    <button class="btn btn-outline-light-custom" onclick="refreshVacancies()">Обновить</button>
+                </div>
+                <div class="card-body">
+                    <div id="vacancies-container">
+                        {% if recent_vacancies %}
+                            {% for vac in recent_vacancies %}
+                                <div class="border-bottom-light pb-3 mb-3">
+                                    <h6 class="mb-1 fs-6">
+                                        <a href="{{ vac.url }}" target="_blank" class="link-light">
+                                            {{ vac.name }}
+                                        </a>
+                                    </h6>
+                                    <div class="mt-1">
+                                        <span class="badge-light-custom me-1">{{ vac.city }}</span>
+                                        <span class="badge-light-custom">
+                                            {% if vac.salary_mid and vac.salary_mid != "Не указана" %}
+                                                {{ vac.salary_mid }}
+                                            {% else %}
+                                                Зарплата не указана
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    <small class="text-muted-light d-block mt-1">{{ vac.employer }}</small>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted-light text-center mb-0">Нет свежих вакансий</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-lg-5">
+            <div class="glass-card h-100">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <img src="/static/images/logo.png" 
+                            alt="Job Analyzer" 
+                            style="width: 100px; height: 100px; object-fit: cover;">
+                        <p class="text-muted-light">Аналитика рынка труда</p>
+                    </div>
+                    
+                    <div>
+                        <h5 class="fw-semibold mb-2">О сервисе</h5>
+                        <p class="small text-muted-light">Сервис собирает вакансии с hh.ru, анализирует зарплаты, строит аналитические графики и предсказывает доход по выбранной профессии. Данные обновляются автоматически.</p>
+                        
+                        <h5 class="fw-semibold mt-4 mb-2">Как это работает</h5>
+                        <ul class="small text-muted-light ps-3">
+                            <li>Парсинг вакансий через API hh.ru</li>
+                            <li>Очистка и нормализация данных</li>
+                            <li>Машинное обучение</li>
+                            <li>Предсказание зарплаты по городу и опыту</li>
+                        </ul>
+                        
+                        <div class="row g-2 mt-4">
+                            <div class="col-4">
+                                <div class="stat-box">
+                                    <h4 class="fw-bold mb-0">7500+</h4>
+                                    <small class="text-muted-light">вакансий</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-box">
+                                    <h4 class="fw-bold mb-0">Все</h4>
+                                    <small class="text-muted-light">профессии</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-box">
+                                    <h4 class="fw-bold mb-0">{{ avg_mae|default('---') }}</h4>
+                                    <small class="text-muted-light"> Среднее MAE</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-lg-3">
+            <div class="glass-card">
+                <div class="card-header">
+                    <h5 class="mb-0">Анализ зарплат</h5>
+                </div>
+                <div class="card-body">
+                    <form action="/check_profession" method="POST">
+                        <div class="mb-3">
+                            <label for="profession" class="form-label-custom">Профессия</label>
+                            <input type="text" class="form-control-dark w-100" id="profession" 
+                                   name="profession" placeholder="Введите название профессии" required>
+                        </div>
+                        <button type="submit" class="btn btn-outline-light-custom w-100">
+                            Анализировать →
+                        </button>
+                    </form>
+                    <hr class="my-3" style="border-color: rgba(255,255,255,0.08);">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function refreshVacancies() {
+    const container = document.getElementById('vacancies-container');
+    if (!container) return;
+    
+    fetch('/api/refresh_vacancies')
+        .then(response => response.json())
+        .then(data => {
+            container.innerHTML = '';
+            data.forEach(vac => {
+                container.innerHTML += `
+                    <div class="border-bottom-light pb-3 mb-3">
+                        <h6 class="mb-1 fs-6">
+                            <a href="${vac.url}" target="_blank" class="link-light">
+                                ${vac.name}
+                            </a>
+                        </h6>
+                        <div class="mt-1">
+                            <span class="badge-light-custom me-1">${vac.city}</span>
+                            <span class="badge-light-custom">${vac.salary}</span>
+                        </div>
+                        <small class="text-muted-light d-block mt-1">${vac.employer}</small>
+                    </div>
+                `;
+            });
+        })
+        .catch(error => console.error('Ошибка:', error));
+}
+</script>
+{% endblock %}

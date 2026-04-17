@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Сбор данных{% endblock %}
+
+{% block content %}
+<style>
+    .loading-card {
+        background: rgba(25, 25, 35, 0.92);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        overflow: hidden;
+    }
+    
+    .loading-header {
+        background: rgba(20, 20, 30, 0.8);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 1.25rem;
+        text-align: center;
+    }
+    
+    .loading-header h4 {
+        color: #f39c12;
+        margin-bottom: 0;
+        font-weight: 500;
+    }
+    
+    .loading-body {
+        padding: 2rem;
+        text-align: center;
+    }
+    
+    .spinner-custom {
+        width: 4rem;
+        height: 4rem;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+        border-top-color: #f39c12;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto 1.5rem;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    .loading-text {
+        color: #ffffff;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .loading-subtext {
+        color: #8b8ba5;
+        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .progress-custom {
+        background: rgba(50, 50, 70, 0.6);
+        border-radius: 30px;
+        height: 6px;
+        overflow: hidden;
+        margin: 1.5rem 0 1rem;
+    }
+    
+    .progress-bar-custom {
+        background: #f39c12;
+        width: 100%;
+        height: 100%;
+        animation: pulse 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+    
+    .status-text {
+        color: #a8a8c0;
+        font-size: 0.9rem;
+        margin-top: 1rem;
+    }
+    
+    .btn-back {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #b8b8d0;
+        border-radius: 30px;
+        padding: 0.5rem 1.5rem;
+        font-size: 0.9rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.2s;
+        margin-top: 1rem;
+    }
+    
+    .btn-back:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+</style>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="loading-card">
+            <div class="loading-header">
+                <h4>Сбор данных для "{{ profession }}"</h4>
+            </div>
+            <div class="loading-body">
+                <div class="spinner-custom"></div>
+                
+                <p class="loading-text">Это займёт около 1-2 минут</p>
+                <p class="loading-subtext">Мы собираем вакансии и обучаем модель</p>
+                
+                <div class="progress-custom">
+                    <div class="progress-bar-custom"></div>
+                </div>
+                
+                <p id="status" class="status-text">Идёт сбор вакансий...</p>
+                
+                <a href="/" class="btn-back">На главную</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const profession = "{{ profession }}";
+    
+    function checkReady() {
+        fetch(`/check_ready/${encodeURIComponent(profession)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.ready) {
+                    window.location.href = `/plots/${encodeURIComponent(profession)}`;
+                } else {
+                    document.getElementById('status').innerHTML = 'Сбор вакансий и обучение модели...';
+                    setTimeout(checkReady, 3000);
+                }
+            })
+            .catch(() => setTimeout(checkReady, 5000));
+    }
+    
+    setTimeout(checkReady, 3000);
+</script>
+{% endblock %}

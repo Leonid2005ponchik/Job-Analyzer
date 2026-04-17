@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .analysis-card {
+        background: rgba(25, 25, 35, 0.94);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.25s ease;
+    }
+    
+    .analysis-card:hover {
+        border-color: rgba(243, 156, 18, 0.25);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .card-header-custom {
+        background: rgba(20, 20, 30, 0.7);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 1rem 1.5rem;
+    }
+    
+    .card-header-custom h5 {
+        color: #ffffff;
+        margin-bottom: 0;
+        font-weight: 500;
+        font-size: 1rem;
+        letter-spacing: 0.2px;
+        opacity: 0.9;
+    }
+    
+    .form-label-custom {
+        color: #a0a0b8;
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin-bottom: 0.4rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    
+    .form-control-dark {
+        background: rgba(15, 15, 22, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #ffffff;
+        border-radius: 12px;
+        padding: 0.65rem 1rem;
+        font-size: 0.9rem;
+        width: 100%;
+        transition: all 0.2s ease;
+    }
+    
+    .form-control-dark:hover {
+        border-color: rgba(255, 255, 255, 0.15);
+        background: rgba(20, 20, 30, 0.8);
+    }
+    
+    .form-control-dark:focus {
+        background: rgba(20, 20, 30, 0.9);
+        border-color: #f39c12;
+        color: #ffffff;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(243, 156, 18, 0.1);
+    }
+    
+    .select-dark {
+        background: rgba(15, 15, 22, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #ffffff;
+        border-radius: 12px;
+        padding: 0.65rem 1rem;
+        font-size: 0.9rem;
+        width: 100%;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .select-dark:hover {
+        border-color: rgba(255, 255, 255, 0.15);
+        background: rgba(20, 20, 30, 0.8);
+    }
+    
+    .select-dark:focus {
+        border-color: #f39c12;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(243, 156, 18, 0.1);
+    }
+    
+    .btn-predict {
+        background: rgba(243, 156, 18, 0.9);
+        border: none;
+        color: #ffffff;
+        border-radius: 30px;
+        padding: 0.7rem 1.5rem;
+        font-weight: 500;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+        width: 100%;
+        letter-spacing: 0.3px;
+    }
+    
+    .btn-predict:hover {
+        background: #f39c12;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(243, 156, 18, 0.25);
+    }
+    
+    .btn-predict:active {
+        transform: translateY(0);
+    }
+    
+    .result-card {
+        background: rgba(243, 156, 18, 0.15);
+        border: 1px solid rgba(243, 156, 18, 0.25);
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.2s ease;
+    }
+    
+    .result-card h3 {
+        font-size: 2.2rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        color: #f39c12;
+    }
+    
+    .result-card small {
+        color: #a0a0b8;
+        font-size: 0.8rem;
+    }
+    
+    .btn-refresh {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #a0a0b8;
+        border-radius: 50%;
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.25s ease;
+        cursor: pointer;
+    }
+    
+    .btn-refresh:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: rotate(90deg);
+        color: #f39c12;
+        border-color: rgba(243, 156, 18, 0.3);
+    }
+    
+    .text-muted-light {
+        color: #8a8aa5;
+    }
+    
+    .info-text {
+        color: #a0a0b8;
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+    
+    .available-professions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+    }
+    
+    .profession-tag {
+        background: rgba(243, 156, 18, 0.12);
+        border: 1px solid rgba(243, 156, 18, 0.2);
+        color: #f39c12;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        display: inline-block;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .analysis-card {
+        animation: fadeIn 0.4s ease-out;
+    }
+    
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: rgba(25, 25, 35, 0.6);
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: rgba(243, 156, 18, 0.3);
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(243, 156, 18, 0.5);
+    }
+    
+    .card-header-custom::before {
+        display: none;
+    }
+    
+    .card-header-custom h5::after {
+        display: none;
+    }
+    
+    .result-card::before {
+        display: none;
+    }
+    
+    .btn-predict::before {
+        display: none;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            
+            
+            <!-- Форма предсказания -->
+            <div class="analysis-card mb-4">
+                <div class="card-header-custom">
+                    <h5>Предсказание зарплаты</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form action="" method="post">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="job_title" class="form-label-custom">Название вакансии</label>
+                                <input type="text" class="form-control-dark" id="job_title" name="job_title" value="{{ profession }}" placeholder="Например: разработчик" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="city" class="form-label-custom">Город</label>
+                                <input type="text" class="form-control-dark" id="city" name="city" value="{{ city if city else 'Москва' }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="employer" class="form-label-custom">Работодатель <span class="text-muted-light" style="font-weight: normal;">(необязательно)</span></label>
+                                <input type="text" class="form-control-dark" id="employer" name="employer" value="{{ employer }}" placeholder="Например: Яндекс, Сбер">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="currency" class="form-label-custom">Валюта</label>
+                                <select class="select-dark" id="currency" name="currency">
+                                    <option value="RUB" {% if currency == 'RUB' %}selected{% endif %}>RUB</option>
+                                    <option value="USD" {% if currency == 'USD' %}selected{% endif %}>USD</option>
+                                    <option value="EUR" {% if currency == 'EUR' %}selected{% endif %}>EUR</option>
+                                    <option value="KZT" {% if currency == 'KZT' %}selected{% endif %}>KZT</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <button type="submit" class="btn-predict">
+                                Предсказать зарплату
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Результат предсказания -->
+            {% if salary %}
+            <div class="analysis-card mb-4">
+                <div class="card-header-custom">
+                    <h5>Результат предсказания</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="result-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="text-start">
+                                <small style="color: #a0a0b8;">Прогнозируемая зарплата</small>
+                                <h3 class="mb-0">{{ salary|int }} ₽</h3>
+                                <small class="mt-2 d-block" style="color: #8a8aa5;">
+                                    {{ city if city else 'Город не указан' }}
+                                </small>
+                                {% if employer %}
+                                <small style="color: #8a8aa5;">{{ employer }}</small>
+                                {% endif %}
+                            </div>
+                            <a href="{{ url_for('ml_page') }}" class="btn-refresh text-decoration-none" title="Новый запрос">
+                                <span>↻</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Информационный блок -->
+            <div class="analysis-card">
+                <div class="card-header-custom">
+                    <h5>О методе предсказания</h5>
+                </div>
+                <div class="card-body p-4">
+                    <p class="info-text">
+                        Модель обучена на данных hh.ru с использованием алгоритма Gradient Boosting. 
+                        Предсказание учитывает город, работодателя и выбранную профессию. 
+                        Точность модели MAE составляет около 55 000 рублей на тестовых данных.
+                    </p>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

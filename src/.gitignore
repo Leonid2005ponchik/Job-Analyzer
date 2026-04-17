@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Базы данных
+*.db
+*.sqlite
+
+# Модели ML (большие файлы)
+*.pkl
+*.joblib
+
+# Секреты
+.env
+config.py
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}Поиск вакансий{% endblock %}
+
+{% block content %}
+<style>
+    .search-card {
+        background: rgba(25, 25, 35, 0.92);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        overflow: hidden;
+    }
+    
+    .search-header {
+        background: rgba(20, 20, 30, 0.8);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 1.25rem;
+    }
+    
+    .search-header h4 {
+        color: #f39c12;
+        margin-bottom: 0;
+        font-weight: 500;
+    }
+    
+    .form-label-custom {
+        color: #b8b8d0;
+        font-size: 0.8rem;
+        font-weight: 500;
+        margin-bottom: 0.3rem;
+    }
+    
+    .form-control-dark {
+        background: rgba(20, 20, 30, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        border-radius: 12px;
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+        width: 100%;
+    }
+    
+    .form-control-dark:focus {
+        background: rgba(20, 20, 30, 0.9);
+        border-color: #f39c12;
+        color: #ffffff;
+        outline: none;
+    }
+    
+    .btn-search {
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        border: none;
+        color: #ffffff;
+        border-radius: 30px;
+        padding: 0.7rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        width: 100%;
+    }
+    
+    .btn-search:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+    }
+    
+    .vacancy-card {
+        background: rgba(30, 30, 45, 0.9);
+        border-radius: 16px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        transition: all 0.2s;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .vacancy-card:hover {
+        border-color: rgba(243, 156, 18, 0.3);
+        transform: translateX(5px);
+    }
+    
+    .vacancy-title {
+        color: #ffffff;
+        font-size: 1rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+    
+    .vacancy-salary {
+        color: #f39c12;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    
+    .vacancy-employer {
+        color: #8b8ba5;
+        font-size: 0.8rem;
+    }
+    
+    .btn-vacancy-link {
+        background: rgba(243, 156, 18, 0.2);
+        border: 1px solid rgba(243, 156, 18, 0.3);
+        color: #f39c12;
+        border-radius: 20px;
+        padding: 0.25rem 1rem;
+        font-size: 0.8rem;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    
+    .btn-vacancy-link:hover {
+        background: rgba(243, 156, 18, 0.4);
+        color: #ffffff;
+    }
+    
+    .badge-city {
+        background: rgba(255, 255, 255, 0.1);
+        color: #a8a8c0;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+    }
+    
+    .no-results {
+        text-align: center;
+        padding: 3rem;
+        color: #8b8ba5;
+    }
+    
+    .result-count {
+        color: #f39c12;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="search-card">
+        <div class="search-header">
+            <h4>Поиск актуальных вакансий</h4>
+            <p class="text-muted-light mt-2 mb-0">Найдите свежие вакансии с hh.ru по любой профессии и городу</p>
+        </div>
+        
+        <div class="card-body p-4">
+            <form action="{{ url_for('vacancies_page') }}" method="post">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <label for="profession" class="form-label-custom">Профессия</label>
+                        <input type="text" class="form-control-dark" id="profession" name="profession" 
+                               value="{{ request.form.get('profession', '') }}" 
+                               placeholder="Например: python, аналитик, водитель" required>
+                    </div>
+                    <div class="col-md-5">
+                        <label for="city" class="form-label-custom">Город</label>
+                        <input type="text" class="form-control-dark" id="city" name="city" 
+                               value="{{ request.form.get('city', 'Москва') }}" 
+                               placeholder="Например: Москва, Санкт-Петербург">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn-search">
+                            Найти
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Результаты поиска -->
+    {% if vacancies is not none %}
+    <div class="mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="text-white mb-0">Результаты поиска</h5>
+            <span class="result-count">Найдено: {{ vacancies|length }} вакансий</span>
+        </div>
+        
+        {% if vacancies %}
+            {% for vac in vacancies %}
+            <div class="vacancy-card">
+                <div class="row align-items-center">
+                    <div class="col-md-7">
+                        <div class="vacancy-title">{{ vac.name }}</div>
+                        <div class="vacancy-employer mt-1">
+                            <span class="badge-city">{{ vac.employer if vac.employer else 'Работодатель не указан' }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="vacancy-salary">{{ vac.salary if vac.salary else 'Зарплата не указана' }}</div>
+                    </div>
+                    <div class="col-md-2 text-end">
+                        {% if vac.url %}
+                        <a href="{{ vac.url }}" target="_blank" class="btn-vacancy-link">
+                            Открыть →
+                        </a>
+                        {% else %}
+                        <span class="text-muted-light">Нет ссылки</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-results">
+                <p>Вакансии не найдены</p>
+                <small>Попробуйте изменить профессию или город</small>
+            </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

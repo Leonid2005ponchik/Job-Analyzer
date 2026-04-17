@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .plots-container {
+        background: rgba(25, 25, 35, 0.94);
+        backdrop-filter: blur(8px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+    }
+    
+    .plots-header {
+        background: rgba(20, 20, 30, 0.7);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 1.25rem 1.5rem;
+    }
+    
+    .plots-header h4 {
+        color: #ffffff;
+        margin-bottom: 0.25rem;
+        font-weight: 500;
+    }
+    
+    .plots-header p {
+        color: #a0a0b8;
+        margin-bottom: 0;
+        font-size: 0.85rem;
+    }
+    
+    .plot-card {
+        background: rgba(15, 15, 22, 0.6);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        overflow: hidden;
+        transition: all 0.25s ease;
+        height: 100%;
+    }
+    
+    .plot-card:hover {
+        border-color: rgba(243, 156, 18, 0.25);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .plot-title {
+        background: rgba(20, 20, 30, 0.5);
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .plot-title h6 {
+        margin-bottom: 0;
+        color: #e0e0f0;
+        font-size: 0.85rem;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+    }
+    
+    .plot-image {
+        width: 100%;
+        padding: 1rem;
+        background: rgba(0, 0, 0, 0.2);
+        min-height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .plot-image img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 12px;
+        transition: opacity 0.2s ease;
+    }
+    
+    .plot-image img:hover {
+        opacity: 0.95;
+    }
+    
+    .badge-profession {
+        background: rgba(243, 156, 18, 0.15);
+        color: #f39c12;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    
+    .btn-predict {
+        background: rgba(243, 156, 18, 0.9);
+        border: none;
+        color: #ffffff;
+        border-radius: 30px;
+        padding: 0.7rem 1.5rem;
+        font-weight: 500;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+        letter-spacing: 0.3px;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-predict:hover {
+        background: #f39c12;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(243, 156, 18, 0.25);
+        color: #ffffff;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(15px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .plot-card {
+        animation: fadeIn 0.4s ease-out;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="plots-container">
+        <div class="plots-header">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <div>
+                    <h4>Аналитика по профессии</h4>
+                    <p>Детальный анализ рынка труда на основе собранных вакансий</p>
+                </div>
+                <div>
+                    <span class="badge-profession">{{ profession }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="p-4">
+            <!-- Первый ряд: 2 графика -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="plot-card">
+                        <div class="plot-title">
+                            <h6>Топ 10 городов по количеству вакансий</h6>
+                        </div>
+                        <div class="plot-image">
+                            <img src="{{ url_for('static', filename='plots/' + profession + '_top_cities.png') }}" 
+                                 alt="Топ городов"
+                                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'400\' height=\'300\' fill=\'%231a1a2e\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' fill=\'%23a0a0b8\' font-family=\'monospace\'%3EГрафик временно недоступен%3C/text%3E%3C/svg%3E'">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="plot-card">
+                        <div class="plot-title">
+                            <h6>Топ 10 работодателей</h6>
+                        </div>
+                        <div class="plot-image">
+                            <img src="{{ url_for('static', filename='plots/' + profession + '_top_employers.png') }}" 
+                                 alt="Топ работодателей"
+                                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'400\' height=\'300\' fill=\'%231a1a2e\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' fill=\'%23a0a0b8\' font-family=\'monospace\'%3EГрафик временно недоступен%3C/text%3E%3C/svg%3E'">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Второй ряд: 2 графика -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="plot-card">
+                        <div class="plot-title">
+                            <h6>Распределение зарплат</h6>
+                        </div>
+                        <div class="plot-image">
+                            <img src="{{ url_for('static', filename='plots/' + profession + '_salary_distribution.png') }}" 
+                                 alt="Распределение зарплат"
+                                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'400\' height=\'300\' fill=\'%231a1a2e\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' fill=\'%23a0a0b8\' font-family=\'monospace\'%3EГрафик временно недоступен%3C/text%3E%3C/svg%3E'">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="plot-card">
+                        <div class="plot-title">
+                            <h6>Динамика зарплат по месяцам</h6>
+                        </div>
+                        <div class="plot-image">
+                            <img src="{{ url_for('static', filename='plots/' + profession + '_salary_date.png') }}" 
+                                 alt="Динамика зарплат"
+                                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'400\' height=\'300\' fill=\'%231a1a2e\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' fill=\'%23a0a0b8\' font-family=\'monospace\'%3EГрафик временно недоступен%3C/text%3E%3C/svg%3E'">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Третий ряд: 2 графика -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="plot-card">
+                        <div class="plot-title">
+                            <h6>Распределение зарплат по городам</h6>
+                        </div>
+                        <div class="plot-image">
+                            <img src="{{ url_for('static', filename='plots/' + profession + '_salary_by_city.png') }}" 
+                                 alt="Зарплаты по городам"
+                                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'400\' height=\'300\' fill=\'%231a1a2e\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' fill=\'%23a0a0b8\' font-family=\'monospace\'%3EГрафик временно недоступен%3C/text%3E%3C/svg%3E'">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="plot-card">
+                        <div class="plot-title">
+                            <h6>Распределение зарплат по работодателям</h6>
+                        </div>
+                        <div class="plot-image">
+                            <img src="{{ url_for('static', filename='plots/' + profession + '_salary_by_employer.png') }}" 
+                                 alt="Зарплаты по работодателям"
+                                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'400\' height=\'300\' fill=\'%231a1a2e\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' fill=\'%23a0a0b8\' font-family=\'monospace\'%3EГрафик временно недоступен%3C/text%3E%3C/svg%3E'">
+                        </div>
+                    </div>
+                </div>
+            </div>
+                
+            
+            <!-- Кнопка возврата -->
+            <div class="text-center mt-3">
+                <a href="{{ url_for('index') }}" class="btn-predict">
+                    ← На главную
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
