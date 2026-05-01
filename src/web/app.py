@@ -1,8 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify # библиотека для создания веб приложения
+from flask import Flask, render_template, request, redirect, url_for, jsonify, make_response # библиотека для создания веб приложения
 # отображение html страниц, забираем данные от user, перенаправление между страницами, словари в формат json
 import joblib # сохранение моделей
 import sys # система
 import os # пути 
+os.environ['PATH'] = r'C:\msys64\mingw64\bin' + os.pathsep + os.environ.get('PATH', '')
+os.environ['WEASYPRINT_DLL_DIRECTORIES'] = r'C:\msys64\mingw64\bin'
 import threading #для работы с потоками данных 
 import subprocess # нужно чтобы из 1 го скрипта загрузить другой 
 import pandas as pd # библиотека для обработки 
@@ -11,7 +13,10 @@ from news_fetcher import fetch_news
 import gc # сборщик мусора 
 import traceback
 import random
-
+import pdfkit ##################################################
+from weasyprint import HTML 
+from datetime import datetime
+from urllib.parse import quote # библиотека для кодировки 
 
 # Добавляем путь к src
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -112,7 +117,7 @@ def index():
 
 @app.route('/api/refresh_vacancies')
 def refresh_vacancies():
-    vacancies = fetch_latest_vacancies(limit=5) # динамически парсим новости 
+    vacancies = fetch_latest_vacancies(limit=5) 
     return jsonify(vacancies)
 
 
@@ -290,9 +295,6 @@ def fetch_vacancies(profession, city_name, limit=20):
     return vacancies
 
 
-
-
-
 @app.route('/vacancies', methods=['GET', 'POST'])
 def vacancies_page():
     vacancies = None
@@ -369,7 +371,10 @@ def show_plots(profession):
     need_plots = [
         f'{prefix}top_cities.png',
         f'{prefix}top_employers.png',
-        f'{prefix}salary_distribution.png'
+        f'{prefix}salary_distribution.png',
+        f'{prefix}salary_date.png',
+        f'{prefix}salary_by_city.png',
+        f'{prefix}salary_by_employer.png'
     ]
 
     plots_exist = all(os.path.exists(os.path.join(plots_link, plot)) for plot in need_plots)
@@ -417,10 +422,98 @@ def format_salary(salary_data):
             return f"{salary_to} {currency}"
     else:
         return 'не указана'
-
     
+def get_report_data(profession): 
+    # загружаем данные
+    conn = get_connection()
+    if profession:
+        df = pd.read_sql_query('''
+            SELECT v.*, c.name as city_name, e.name as employer_name
+            FROM vacancies v
+            LEFT JOIN cities c ON v.city_id = c.id
+            LEFT JOIN employers e ON v.employer_id = e.id
+            WHERE v.profession = ?
+        ''', conn, params=(profession,))
+    else:
+        df = pd.read_sql_query('''
+            SELECT v.*, c.name as city_name, e.name as employer_name
+            FROM vacancies v
+            LEFT JOIN cities c ON v.city_id = c.id
+            LEFT JOIN employers e ON v.employer_id = e.id
+        ''', conn)
+    conn.close()
+
+    data = df.copy() #создаем копию БД 
+
+    if len(data) == 0: 
+        print(f"Нет данных для: {profession}")
+        return None
+    if len(data) < 10: 
+        print(f"Слишком мало данных для: {profession}")
+        return None
+
+    data= data.dropna(subset=['salary_mid'])
+    data = data[data['salary_mid'] > 0]
+
+    count = len(data) # количество вакансий 
+    salary_mid_for_profession = data['salary_mid'].mean() # Среднее
+    mediana_salary = data['salary_mid'].median() # среднее по медиане 
+    min_salary = data['salary_mid'].min() # минимум 
+    filtered_data = data[data['salary_mid'] <= 1_000_000]
+    max_salary = filtered_data['salary_mid'].max() # максимум
+
+    # Загружаем данные MAE
+    metrics_data = joblib.load('src/ml/models/metrics.pkl')
+    print(f"Метрики загружены: {metrics_data}")
+    mae_values = [m['mae_train'] for m in metrics_data.values() if 'mae_train' in m]
+    avg_mae = sum(mae_values) / len(mae_values)
 
 
+    if profession:
+            try:
+                salary = predictor._predict(profession, 'Москва', 'Other', 'RUB')
+                if salary:
+                    salary = round(salary)
+                    print(f"Предсказанная зарплата: {salary}")
+            except Exception as e:
+                print(f"Ошибка: {e}")
+                traceback.print_exc()
+                salary = None
+
+    plots = ['top_cities', 'top_employers', 'salary_distribution', 
+         'salary_date', 'salary_by_city', 'salary_by_employer']
+    return {
+        'profession': profession,
+        'count': count,
+        'mean_salary': round(salary_mid_for_profession),
+        'median_salary': round(mediana_salary),
+        'min_salary': round(min_salary),
+        'max_salary': round(max_salary),
+        'mae': round(avg_mae, 2),
+        'predicted_salary': salary,
+        'plots': plots
+    }
+
+@app.route('/export_pdf/<profession>')
+def export_pdf(profession):
+    report_data = get_report_data(profession)
+    if report_data is None: 
+        return "Нет данных для отчета"
+    
+    render = render_template('pdf_report.html',
+                             profession=profession,
+                             date=datetime.now().strftime('%Y-%m-%d %H:%M'),
+                             data=report_data)
+    
+    #config = pdfkit.configuration(wkhtmltopdf=r'C:\wkhtmltopdf\bin\wkhtmltopdf.exe')
+    html_doc = HTML(string=render)
+    pdf_file = html_doc.write_pdf(compress=False, presentational_hints=True) #генерируем файл 
+    response = make_response(pdf_file) # создаем ответ сервера 
+    response.headers['Content-Type'] = 'application/pdf' # установка типа контента для pdf 
+    # инструкция для браузера где и как сохранить 
+    response.headers['Content-Disposition'] = f"inline; filename*=UTF-8''{quote(f'report_{profession}.pdf')}"
+
+    return response
 if __name__ == "__main__":
     app.run(debug=True) #запускаем локальный сервер разработки
     for rule in app.url_map.iter_rules():

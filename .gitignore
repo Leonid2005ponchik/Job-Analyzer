@@ -22,3 +22,12 @@ config.py
 # OS
 .DS_Store
 Thumbs.db
+
+# виртуальное окружение 
+venv/
+.venv/
+
+# логи и временные файлы 
+*.log
+*.tmp
+.cache/

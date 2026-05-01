@@ -59,9 +59,29 @@ git log --online - сокращенная история
 
 git remote add origin https:// github.com/username/repo.git - добавление удаленного репозитория 
 
+git branch -M main - используем принудительное переименование текущей ветки в main 
+
 git push -u origin main  - отправка на GitHub
 
 git pull origin main - скачивание с github
+
+
+
+Дополнительные нужные команды: 
+
+git clone - клонирует репозиторий c GitHub
+
+cd .. - переход в папку 
+
+python -m venv venv - создаем виртуальное окружение 
+
+venv/Scripts/activate - активирует виртуальное окружение 
+
+pip install -r requirements.txt - установка зависимостей библиотек 
+
+python src/db/database.py - создание таблиц в БД 
+
+python src/web/app.py - запуск сервера 
 
 
 
@@ -84,6 +104,8 @@ git pull origin main - скачивание с github
 -dist/, build/, out/ — папки с готовым скомпилированным кодом.
 -*.log — файлы логов (журналы ошибок).
 -*.exe, *.pyc, *.class — скомпилированные бинарные файлы.
+
+- *.png - не добавлять фотографии 
 
 Мой случай: 
 # Python

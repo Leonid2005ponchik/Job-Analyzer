@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Аналитический отчет - {{ data.profession | capitalize }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'DejaVu Sans', 'Arial', sans-serif;
+            font-size: 12px;
+            line-height: 1.5;
+            color: #2c3e50;
+            background: white;
+        }
+        
+        /* Параметры страницы для печати */
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        
+        @page :first {
+            margin-top: 3cm;
+        }
+        
+        /* Обложка */
+        .cover {
+            text-align: center;
+            margin-bottom: 2cm;
+            page-break-after: always;
+        }
+        
+        .cover h1 {
+            font-size: 32px;
+            color: #f39c12;
+            margin-top: 100px;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+        
+        .cover .subtitle {
+            font-size: 18px;
+            color: #7f8c8d;
+            margin-bottom: 60px;
+        }
+        
+        .cover .profession-name {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            background: #f8f9fa;
+            display: inline-block;
+            padding: 15px 40px;
+            border-radius: 50px;
+            margin: 40px 0;
+            border: 1px solid #ecf0f1;
+        }
+        
+        .cover .date {
+            font-size: 12px;
+            color: #95a5a6;
+            margin-top: 80px;
+        }
+        
+        .cover .footer {
+            font-size: 10px;
+            color: #bdc3c7;
+            margin-top: 60px;
+        }
+        
+        /* Заголовки разделов */
+        h1 {
+            font-size: 24px;
+            color: #2c3e50;
+            border-bottom: 3px solid #f39c12;
+            padding-bottom: 8px;
+            margin: 25px 0 20px 0;
+        }
+        
+        h2 {
+            font-size: 18px;
+            color: #34495e;
+            margin: 20px 0 15px 0;
+            padding-left: 10px;
+            border-left: 4px solid #f39c12;
+        }
+        
+        h3 {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin: 15px 0 10px 0;
+        }
+        
+        /* Карточка предсказания */
+        .prediction-card {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .prediction-card .label {
+            font-size: 14px;
+            opacity: 0.9;
+            letter-spacing: 1px;
+        }
+        
+        .prediction-card .value {
+            font-size: 42px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .prediction-card .city {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        /* Таблица статистики */
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: #f8f9fa;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .stats-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        .stats-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .stats-table .label {
+            font-weight: 600;
+            color: #2c3e50;
+            width: 45%;
+            background: #ecf0f1;
+        }
+        
+        .stats-table .value {
+            color: #34495e;
+            font-weight: 500;
+        }
+        
+        /* Метрики качества */
+        .metrics-grid {
+            display: table;
+            width: 100%;
+            margin: 20px 0;
+            border-spacing: 15px;
+        }
+        
+        .metric-card {
+            display: table-cell;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #ecf0f1;
+        }
+        
+        .metric-card .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #f39c12;
+        }
+        
+        .metric-card .metric-label {
+            font-size: 11px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        /* Графики */
+        .plot-container {
+            margin: 25px 0;
+            text-align: center;
+            page-break-inside: avoid;
+        }
+        
+        .plot-container img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ecf0f1;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .plot-caption {
+            font-size: 11px;
+            color: #95a5a6;
+            margin-top: 8px;
+            font-style: italic;
+        }
+        
+        /* Разрыв страницы */
+        .page-break {
+            page-break-before: always;
+        }
+        
+        /* Футер */
+        .report-footer {
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 1px solid #ecf0f1;
+            font-size: 9px;
+            color: #bdc3c7;
+            text-align: center;
+        }
+        
+        /* Список */
+        .note {
+            background: #fff9e6;
+            padding: 12px 15px;
+            border-left: 4px solid #f39c12;
+            font-size: 11px;
+            color: #7f8c8d;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+
+
+<div class="cover">
+    <h1>JOB АНАЛИТИКА</h1>
+    <div class="subtitle">Профессиональный анализ рынка труда</div>
+    
+    <div class="profession-name">
+        {{ data.profession | capitalize }}
+    </div>
+    
+    <div class="date">
+        Дата формирования отчета: {{ date }}
+    </div>
+    
+    <div class="footer">
+        Данные собраны с платформы hh.ru<br>
+        Модель машинного обучения: Gradient Boosting
+    </div>
+</div>
+
+<div class="prediction-card">
+    <div class="label">ПРОГНОЗИРУЕМАЯ ЗАРПЛАТА</div>
+    <div class="value">{{ data.predicted_salary | default('—') }} ₽</div>
+    <div class="city">Москва, стандартный работодатель</div>
+</div>
+
+<h1>Статистика по вакансиям</h1>
+
+<table class="stats-table">
+    <tr>
+        <td class="label">Всего вакансий в выборке</td>
+        <td class="value">{{ data.count }}</td>
+    </tr>
+    <tr>
+        <td class="label">Средняя зарплата</td>
+        <td class="value">{{ data.mean_salary | default('—') }} ₽</td>
+    </tr>
+    <tr>
+        <td class="label">Медианная зарплата</td>
+        <td class="value">{{ data.median_salary | default('—') }} ₽</td>
+    </tr>
+    <tr>
+        <td class="label">Минимальная зарплата</td>
+        <td class="value">{{ data.min_salary | default('—') }} ₽</td>
+    </tr>
+    <tr>
+        <td class="label">Максимальная зарплата</td>
+        <td class="value">{{ data.max_salary | default('—') }} ₽</td>
+    </tr>
+</table>
+
+<h1>Качество модели машинного обучения</h1>
+
+<div class="metrics-grid">
+    <div class="metric-card">
+        <div class="metric-value">{{ data.mae | default('—') }}</div>
+        <div class="metric-label">Средняя ошибка (MAE), руб.</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value">{{ "%0.1f" | format(data.mae / data.mean_salary * 100 if data.mean_salary else 0) }}%</div>
+        <div class="metric-label">Относительная ошибка</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value">{{ data.count }}</div>
+        <div class="metric-label">Вакансий в обучении</div>
+    </div>
+</div>
+
+<div class="note">
+    MAE (Mean Absolute Error) — средняя ошибка предсказания модели в рублях.<br>
+    Чем ниже значение, тем точнее модель.
+</div>
+
+
+<h1>Визуализация данных</h1>
+
+<div class="plot-container">
+    <h2>Топ 10 городов по количеству вакансий</h2>
+    <img src="{{ url_for('static', filename='plots/' + profession + '_top_cities.png', _external=True) }}" alt="Топ городов">
+</div>
+
+<div class="plot-container">
+    <h2>Топ 10 работодателей</h2>
+    <img src="{{ url_for('static', filename='plots/' + profession + '_top_employers.png', _external=True) }}" alt="Топ работодателей">
+</div>
+
+<div class="plot-container">
+    <h2>Распределение зарплат</h2>
+    <img src="{{ url_for('static', filename='plots/' + profession + '_salary_distribution.png', _external=True) }}" alt="Распределение зарплат">
+    <div class="plot-caption">Красная линия — среднее, зеленая — медиана</div>
+</div>
+
+<div class="page-break"></div>
+
+<div class="plot-container">
+    <h2>Динамика зарплат по месяцам</h2>
+    <img src="{{ url_for('static', filename='plots/' + profession + '_salary_date.png', _external=True) }}" alt="Динамика зарплат">
+</div>
+
+<div class="plot-container">
+    <h2>Разброс зарплат по городам</h2>
+    <img src="{{ url_for('static', filename='plots/' + profession + '_salary_by_city.png', _external=True) }}" alt="Зарплаты по городам">
+    <div class="plot-caption">Boxplot показывает медиану, квартили и выбросы</div>
+</div>
+
+<div class="plot-container">
+    <h2>Разброс зарплат по работодателям</h2>
+    <img src="{{ url_for('static', filename='plots/' + profession + '_salary_by_employer.png', _external=True) }}" alt="Зарплаты по работодателям">
+</div>
+
+
+<div class="report-footer">
+    Job Analyzer — автоматизированная система сбора и анализа данных о вакансиях<br>
+    Отчет сгенерирован {{ date }} - Алгоритм Gradient Boosting - Данные актуальны на момент формирования
+</div>
+
+</body>
+</html>

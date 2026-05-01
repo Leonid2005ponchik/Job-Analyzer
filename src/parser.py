@@ -1,7 +1,6 @@
 import requests #Библиотека http - клиента 
 import time #для ожидания 
 import numpy as np #для научных вычислений 
-from currency_converter import CurrencyConverter #библиотека для конвертации валют 
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from src.db.database import get_connection, get_or_create_city, get_or_create_employer #импортируем базу данных 
@@ -22,7 +21,6 @@ EXCHANGE_RATES = {
             'RUR': 1
         }
 
-c = CurrencyConverter() #создание ковертора валют 
 
 
 def safe_convert(amount, from_currency): # функция конвертации

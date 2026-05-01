@@ -3,9 +3,7 @@ import os, sys
 import matplotlib
 import matplotlib.pyplot as plt # визуализация данных 
 matplotlib.use('Agg') 
-import numpy as np
 import seaborn as sns
-from datetime import datetime
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from src.db.database import get_connection #импортируем базу данных 
 # берем сырые данные из файла, и сохраняем обработанные в файл 

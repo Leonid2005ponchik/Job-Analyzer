@@ -223,11 +223,15 @@
             </div>
                 
             
-            <!-- Кнопка возврата -->
-            <div class="text-center mt-3">
-                <a href="{{ url_for('index') }}" class="btn-predict">
-                    ← На главную
-                </a>
+            <div class="text-center mt-4">
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{{ url_for('export_pdf', profession=profession) }}" class="btn-predict" style="background: rgba(52, 152, 219, 0.9); width: auto; padding: 0.6rem 1.8rem;">
+                        Экспорт в PDF
+                    </a>
+                    <a href="{{ url_for('index') }}" class="btn-predict" style="background: rgba(100, 100, 120, 0.6); width: auto; padding: 0.6rem 1.8rem;">
+                        ← На главную
+                    </a>
+                </div>
             </div>
 
         </div>
