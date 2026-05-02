@@ -80,7 +80,7 @@
 ![Аналитика](src/web/static/images/analyze_plots.png)
 
 ### Предсказание зарплаты  
-![Предсказание зарплаты](src/web/static/images/ml.png)
+![Предсказание зарплаты](src/web/static/images/ml_screen.png)
 
 ### Экспорт pdf 
 ![Экспорт pdf](src/web/static/images/screen_pdf_report.png)
