@@ -327,7 +327,6 @@ def ml_page():
     if request.method == 'POST':
         job_title = request.form.get('job_title', '')
         city = request.form.get('city', 'Москва')
-        employer = request.form.get('employer', '')
         currency = request.form.get('currency', 'RUR')
         profession = job_title.lower().strip()
 
@@ -339,7 +338,7 @@ def ml_page():
 
         if profession:
             try:
-                salary = predictor._predict(profession, city, employer, currency)
+                salary = predictor._predict(profession, city, 'Other', currency)
                 if salary:
                     salary = round(salary)
                     print(f"Предсказанная зарплата: {salary}")
@@ -352,7 +351,6 @@ def ml_page():
                          salary=salary,
                          profession=profession,
                          city=city,
-                         employer=employer,
                          currency=currency,
                          job_title=job_title)
 

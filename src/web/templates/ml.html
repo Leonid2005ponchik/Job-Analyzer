@@ -252,10 +252,6 @@
                                 <input type="text" class="form-control-dark" id="city" name="city" value="{{ city if city else 'Москва' }}" required>
                             </div>
                             <div class="col-md-6">
-                                <label for="employer" class="form-label-custom">Работодатель <span class="text-muted-light" style="font-weight: normal;">(необязательно)</span></label>
-                                <input type="text" class="form-control-dark" id="employer" name="employer" value="{{ employer }}" placeholder="Например: Яндекс, Сбер">
-                            </div>
-                            <div class="col-md-6">
                                 <label for="currency" class="form-label-custom">Валюта</label>
                                 <select class="select-dark" id="currency" name="currency">
                                     <option value="RUB" {% if currency == 'RUB' %}selected{% endif %}>RUB</option>
